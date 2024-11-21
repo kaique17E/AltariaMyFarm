@@ -1,0 +1,84 @@
+@model DsiVendas.Models.Plantio
+
+<h1 class="my-4">Remover Plantio</h1>
+
+<p>Tem certeza de que deseja remover o plantio abaixo?</p>
+
+<div class="form-group w-50">
+    <label class="control-label">Data de Plantio:</label>
+    <p class="form-control-plaintext">@Model.DataInicio.ToShortDateString()</p>
+</div>
+
+<div class="form-group w-50">
+    <label class="control-label">Área do Plantio:</label>
+    <p class="form-control-plaintext">@ViewBag.AreaPlantioNome</p>
+</div>
+
+<div class="form-group w-100">
+    <h5>Recursos Utilizados</h5>
+
+    @if (ViewBag.Recursos != null)
+    {
+        <div>
+            <h6>Maquinários</h6>
+            @if (ViewBag.Recursos.Maquinarios?.Count > 0)
+            {
+                <ul>
+                    @foreach (var maquinario in ViewBag.RecursosMaquinariosNome)
+                    {
+                        <li>@maquinario</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Nenhum maquinário registrado.</p>
+            }
+        </div>
+
+        <div>
+            <h6>Insumos</h6>
+            @if (ViewBag.Recursos.Insumos?.Count > 0)
+            {
+                <ul>
+                    @foreach (var insumo in ViewBag.RecursosInsumos)
+                    {
+                        <li>@insumo</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Nenhum insumo registrado.</p>
+            }
+        </div>
+
+        <div>
+            <h6>Produtos</h6>
+            @if (ViewBag.Recursos.Produtos?.Count > 0)
+            {
+                <ul>
+                    @foreach (var produto in ViewBag.RecursosProdutos)
+                    {
+                        <li>@produto</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Nenhum produto registrado.</p>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Nenhum recurso registrado.</p>
+    }
+</div>
+
+<form asp-action="ExcluirConfirmado" method="post">
+     @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger mt-2">Excluir</button>
+    <a asp-action="Index" class="btn btn-secondary mt-2">Cancelar</a>
+</form>

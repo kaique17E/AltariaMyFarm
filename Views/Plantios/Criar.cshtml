@@ -1,0 +1,159 @@
+@model DsiVendas.Models.Plantio
+
+<h1 class="my-4">Cadastrar Plantio</h1>
+
+<form asp-action="Criar" method="post" class="needs-validation" novalidate>
+    <div class="form-group w-50">
+        <label asp-for="DataInicio" class="control-label">Data de Plantio</label>
+        <input asp-for="DataInicio" class="form-control" type="date" required/>
+        <span asp-validation-for="DataInicio" class="text-danger"></span>
+    </div>
+    <div class="form-group w-50">
+    <label asp-for="AreaPlantioId" class="control-label">Área do Plantio</label>
+    <select asp-for="AreaPlantioId" asp-items="ViewBag.AreasPlantio" class="form-control" required>
+        <option value="">Selecione uma área</option>
+    </select>
+    <span asp-validation-for="AreaPlantioId" class="text-danger"></span>
+</div>
+    <div aria-orientation="horizontal" class="form-group my-4">
+        <h4 class="text-center">Recursos</h4>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <h5>Maquinários</h5>
+                <table class="table table-bordered" id="itensMaquinariosTable">
+                    <thead>
+                        <tr>
+                            <th>Maquinário</th>
+                            <th>Série</th>
+                            <th>Quantidade</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itensMaquinarios"></tbody>
+                </table>
+                <button type="button" class="btn btn-success" id="adicionarItemMaquinario">Adicionar item</button>
+            </div>
+            <div class="col-md-6">
+                <h5>Insumos</h5>
+                <table class="table table-bordered" id="itensInsumosTable">
+                    <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th>Quantidade</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itensInsumos"></tbody>
+                </table>
+                <button type="button" class="btn btn-success" id="adicionarItemInsumo">Adicionar item</button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group w-50">
+        <h5>Produção</h5>
+        <table class="table table-bordered" id="itensProducao">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="itensProducao"></tbody>
+        </table>
+        <button type="button" class="btn btn-success" id="adicionarItemProducao">Adicionar item</button>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary mt-2">Voltar</a>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let hoje = new Date().toISOString().split('T')[0];
+        document.getElementById("DataInicio").value = hoje;
+    });
+
+    let itemIndexPlantio = 0;
+
+    document.getElementById("adicionarItemMaquinario").addEventListener("click", function () {
+        let novaLinha = `
+            <tr>
+                <td>
+                    <select name="itensPlantio[${itemIndexPlantio}].RecursoId" class="form-control" onchange="atualizarNumeroSerie(this, ${itemIndexPlantio})">
+                        @foreach (var recurso in ViewBag.RecursosMaquinarioNome)
+                        {
+                            <option value="@recurso.Value">@recurso.Text</option>
+                        }
+                    </select>
+                </td>
+                <td><input type="text" id="numeroSerie_${itemIndexPlantio}" name="itensPlantio[${itemIndexPlantio}].NumeroSerie" class="form-control" readonly /></td>
+                <td><input type="text" name="itensPlantio[${itemIndexPlantio}].Quantidade" class="form-control"/></td>
+                <td><button type="button" class="btn btn-danger" onclick="removerItem(this)">Remover</button></td>
+            </tr>`;
+        document.getElementById("itensMaquinarios").insertAdjacentHTML('beforeend', novaLinha);
+        itemIndexPlantio++;
+        console.log("Nova linha de maquinário adicionada. Índice:", itemIndexPlantio);
+    });
+
+    function atualizarNumeroSerie(selectElement, index) {
+        let recursoId = selectElement.value;
+        fetch(`/Plantios/GetSerieRecurso?idRecurso=${recursoId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById(`numeroSerie_${index}`).value = data.numeroSerie;
+            })
+            .catch(error => console.error("Erro ao buscar número de série:", error));
+    }
+
+    document.getElementById("adicionarItemInsumo").addEventListener("click", function () {
+        console.log("Botão adicionarItemInsumo foi clicado");
+
+        let novaLinha = `
+            <tr>
+                <td>
+                    <select name="itensPlantio[${itemIndexPlantio}].RecursoId" class="form-control" onchange="atualizarNomeInsumo(this, ${itemIndexPlantio})">
+                        @foreach (var recurso in ViewBag.RecursosInsumos)
+                        {
+                            <option value="@recurso.Value">@recurso.Text</option>
+                        }
+                    </select>
+                </td>
+                <td><input type="text" name="itensPlantio[${itemIndexPlantio}].Quantidade" class="form-control"/></td>
+                <td><button type="button" class="btn btn-danger" onclick="removerItem(this)">Remover</button></td>
+            </tr>`;
+        document.getElementById("itensInsumos").insertAdjacentHTML('beforeend', novaLinha);
+        itemIndexPlantio++;
+        console.log("Nova linha de insumo adicionada. Índice:", itemIndexPlantio);
+    });
+
+    function atualizarNomeInsumo(selectElement, index) {
+        let insumoNome = selectElement.options[selectElement.selectedIndex].text;
+        document.getElementById(`nomeInsumo_${index}`).value = insumoNome;
+        console.log("Nome do insumo atualizado:", insumoNome);
+    }
+
+    document.getElementById("adicionarItemProducao").addEventListener("click", function () {
+        let novaLinha = `
+            <tr>
+                <td>
+                    <select name="itensPlantio[${itemIndexPlantio}].RecursoId" class="form-control">
+                        @foreach (var recurso in ViewBag.RecursosProdutos)
+                        {
+                            <option value="@recurso.Value">@recurso.Text</option>
+                        }
+                    </select>
+                </td>
+                <td><input type="text" name="itensPlantio[${itemIndexPlantio}].Quantidade" class="form-control"/></td>
+                <td><button type="button" class="btn btn-danger" onclick="removerItem(this)">Remover</button></td>
+            </tr>`;
+        document.getElementById("itensProducao").insertAdjacentHTML('beforeend', novaLinha);
+        itemIndexPlantio++;
+        console.log("Nova linha de produção adicionada. Índice:", itemIndexPlantio);
+    });
+
+    function removerItem(botao) {
+        botao.closest('tr').remove();
+        console.log("Item removido.");
+    }
+</script>

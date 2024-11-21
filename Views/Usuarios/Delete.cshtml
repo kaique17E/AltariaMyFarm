@@ -1,0 +1,16 @@
+@model DsiVendas.Models.User
+
+<h2>Deletar Usuário</h2>
+
+<p>Tem certeza de que deseja deletar este usuário?</p>
+
+<div class="form-group w-50">
+    <label>Usuário:</label>
+    <input asp-for="UserName" class="form-control" readonly />
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Deletar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

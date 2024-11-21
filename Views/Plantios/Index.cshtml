@@ -1,0 +1,57 @@
+@model IEnumerable<DsiVendas.Models.Plantio>
+
+<h1>Listagem de Plantios</h1>
+
+@if (TempData["MensagemSucesso"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensagemSucesso"]
+    </div>
+}
+@if (TempData["MensagemErro"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["MensagemErro"]
+    </div>
+}
+
+<p>
+    <a asp-action="Criar" class="btn btn-primary">Novo Plantio</a>
+</p>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Nenhum plantio encontrado.</p>
+}
+else
+{
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Data Início</th>
+                <th scope="col">Área Plantio</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var plantio in Model)
+            {
+                <tr>
+                    <td scope="row">@plantio.Id</td>
+                    <td>@plantio.DataInicio.ToShortDateString()</td>
+                    <td>@plantio.AreaPlantio?.Nome -- @plantio.AreaPlantio?.Localizacao</td>
+                    <td>
+                        <a asp-action="Editar" asp-route-id="@plantio.Id" class="btn btn-sm btn-warning">Editar</a>
+                        <form asp-action="Excluir" asp-route-id="@plantio.Id" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?');" class="btn btn-danger btn-sm">
+                                Excluir
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -148,5 +148,42 @@ public async Task<IActionResult> Criar(Compra compra, List<ItemCompra> itensComp
 
             return Json(recurso.Preco);
         }
+        public IActionResult Excluir(int id)
+{
+    var compra = _context.Compras
+        .Include(c => c.ItensCompra)
+            .ThenInclude(i => i.Recurso)
+        .FirstOrDefault(c => c.Id == id);
+
+    if (compra == null)
+    {
+        return NotFound();
+    }
+
+    return View(compra);
+}
+
+[HttpPost]
+public IActionResult Excluir(Compra compra)
+{
+    var compraRemover = _context.Compras
+        .Include(c => c.ItensCompra)
+        .FirstOrDefault(c => c.Id == compra.Id);
+
+    if (compraRemover == null)
+    {
+        return NotFound();
+    }
+
+    // Remove os itens associados
+    _context.ItemsCompra.RemoveRange(compraRemover.ItensCompra);
+
+    // Remove a compra
+    _context.Compras.Remove(compraRemover);
+    _context.SaveChanges();
+
+    return RedirectToAction(nameof(Index));
+}
+
     }
 }

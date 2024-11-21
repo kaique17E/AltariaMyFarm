@@ -1,0 +1,193 @@
+@model DsiVendas.Models.Compra
+
+<h1 class="my-4">Cadastrar Compra</h1>
+
+<form asp-action="Criar" method="post" class="needs-validation" novalidate>
+    <!-- Data da Compra -->
+    <div class="form-group w-50">
+        <label asp-for="DataVenda" class="form-label">Data da Compra</label>
+        <input asp-for="DataVenda" class="form-control" type="date" required />
+        <span asp-validation-for="DataVenda" class="text-danger"></span>
+    </div>
+
+    <!-- Fornecedor -->
+    <div class="form-group w-50">
+        <label asp-for="FornecedorId">Fornecedor</label>
+        <select asp-for="FornecedorId" asp-items="ViewBag.Fornecedores" class="form-control"></select>
+        <span asp-validation-for="FornecedorId" class="text-danger"></span>
+    </div>
+
+    <!-- Funcionário -->
+    <div class="form-group w-50">
+        <label asp-for="FuncionarioId">Funcionário</label>
+        <select asp-for="FuncionarioId" asp-items="ViewBag.Funcionarios" class="form-control"></select>
+        <span asp-validation-for="FuncionarioId" class="text-danger"></span>
+    </div>
+
+    <!-- Status da Compra -->
+    <div class="form-group w-50">
+        <label asp-for="Status" class="form-label">Status</label>
+        <input asp-for="Status" class="form-control" required />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <!-- Forma de Pagamento -->
+    <div class="form-group w-50">
+        <label asp-for="FormaPagamento" class="form-label">Forma de Pagamento</label>
+        <select asp-for="FormaPagamento" asp-items="ViewBag.FormaPagamentos" class="form-control" onchange="carregarDetalhesFormaPagamento(this)">
+        </select>
+        <span asp-validation-for="FormaPagamento" class="text-danger"></span>
+    </div>
+
+    <!-- Detalhes Forma de Pagamento -->
+    <div id="detalhesFormaPagamento" class="form-group w-50">
+        <!-- Detalhes adicionais da forma de pagamento serão carregados aqui -->
+    </div>
+
+    <!-- Forma de Entrega -->
+    <div class="form-group w-50">
+        <label asp-for="FormaEntrega" class="form-label">Forma de Entrega</label>
+        <input asp-for="FormaEntrega" class="form-control" required />
+        <span asp-validation-for="FormaEntrega" class="text-danger"></span>
+    </div>
+
+    <!-- Total da Compra -->
+    <div class="form-group w-50">
+        <label for="Total">Total da Compra: </label>
+        <input asp-for="Total" id="Total" class="form-control" readonly />
+    </div>
+
+    <!-- Itens da Compra -->
+    <h4 class="mt-4">Itens da Compra</h4>
+    <div class="form-group w-100">
+        <table class="table table-bordered" id="itensCompraTable">
+            <thead>
+                <tr>
+                    <th>Recurso</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Subtotal</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="itensCompra"></tbody>
+        </table>
+        <button type="button" class="btn btn-success" id="adicionarItemCompra">Adicionar item</button>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Salvar</button>
+    <a asp-action="Index" class="btn btn-secondary mt-2">Voltar</a>
+</form>
+
+@section Scripts {
+    <script>
+        let itemIndexCompra = 0;
+
+        // Função para adicionar um item à compra
+        document.getElementById("adicionarItemCompra").addEventListener("click", function () {
+            let novaLinha = `
+                <tr>
+                    <td>
+                        <select name="ItensCompra[${itemIndexCompra}].RecursoId" class="form-control" onchange="buscarPrecoCompra(${itemIndexCompra})">
+                            @foreach (var recurso in ViewBag.Recursos)
+                            {
+                                <option value="@recurso.Value">@recurso.Text</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="ItensCompra[${itemIndexCompra}].Quantidade" class="form-control" onchange="calcularSubTotalCompra(${itemIndexCompra})" />
+                    </td>
+                    <td>
+                        <input type="number" name="ItensCompra[${itemIndexCompra}].PrecoUnitario" class="form-control" readonly />
+                    </td>
+                    <td>
+                        <input type="number" name="ItensCompra[${itemIndexCompra}].SubTotal" class="form-control" readonly />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="removerItemCompra(this)">Remover</button>
+                    </td>
+                </tr>`;
+            document.getElementById("itensCompra").insertAdjacentHTML('beforeend', novaLinha);
+            itemIndexCompra++;
+        });
+
+        // Função para buscar o preço do recurso
+        function buscarPrecoCompra(index) {
+            let recursoId = document.querySelector(`select[name="ItensCompra[${index}].RecursoId"]`).value;
+
+            fetch(`/Compras/GetPrecoRecurso?idRecurso=${recursoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector(`input[name="ItensCompra[${index}].PrecoUnitario"]`).value = data;
+                    calcularSubTotalCompra(index); // Atualiza o subtotal ao definir o preço
+                })
+                .catch(error => console.error('Erro ao buscar o preço do recurso:', error));
+        }
+
+        // Função para calcular o subtotal do item
+        function calcularSubTotalCompra(index) {
+            let quantidade = document.querySelector(`input[name="ItensCompra[${index}].Quantidade"]`).value;
+            let precoUnitario = document.querySelector(`input[name="ItensCompra[${index}].PrecoUnitario"]`).value;
+
+            if (!quantidade || !precoUnitario) return; // Impede o cálculo se algum dos valores estiver vazio
+
+            let subtotal = quantidade * precoUnitario;
+            document.querySelector(`input[name="ItensCompra[${index}].SubTotal"]`).value = subtotal.toFixed(2);
+            calcularTotalCompra(); // Recalcula o total da compra
+        }
+
+        // Função para calcular o total da compra
+        function calcularTotalCompra() {
+            let total = 0;
+            document.querySelectorAll('input[name$="].SubTotal"]').forEach(function (input) {
+                total += parseFloat(input.value || 0);
+            });
+            document.getElementById('Total').value = total.toFixed(2);
+        }
+
+        // Função para remover um item da compra
+        function removerItemCompra(botao) {
+            botao.closest('tr').remove();
+            calcularTotalCompra(); // Recalcula o total ao remover um item
+        }
+
+        // Função para carregar detalhes da forma de pagamento
+        function carregarDetalhesFormaPagamento(select) {
+            let formaPagamentoId = select.value;
+
+            if (formaPagamentoId) {
+                fetch(`/Compras/GetDetalhesFormaPagamento/${formaPagamentoId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let detalhesHtml = '';
+                        if (data && data.parcelas) {
+                            // Exibe as parcelas, caso existam
+                            detalhesHtml = `
+                                <label>Parcelamento:</label>
+                                <select name="Parcelas" class="form-control">
+                                    ${data.parcelas.map(p => `<option value="${p.Id}">${p.Descricao} - ${p.Valor}</option>`).join('')}
+                                </select>
+                            `;
+                        }
+                        document.getElementById('detalhesFormaPagamento').innerHTML = detalhesHtml;
+                    })
+                    .catch(error => console.error('Erro ao carregar detalhes da forma de pagamento:', error));
+            } else {
+                document.getElementById('detalhesFormaPagamento').innerHTML = '';
+            }
+        }
+
+        // Função para formatar a data antes do envio
+        document.querySelector('form').addEventListener('submit', function (event) {
+            let dataVendaInput = document.querySelector('input[name="DataVenda"]');
+            let dataVendaValue = dataVendaInput.value;
+
+            if (dataVendaValue) {
+                let dataFormatada = new Date(dataVendaValue);
+                let dataFormatadaString = dataFormatada.toISOString().split('T')[0]; // Apenas 'YYYY-MM-DD'
+                dataVendaInput.value = dataFormatadaString;
+            }
+        });
+    </script>
+}

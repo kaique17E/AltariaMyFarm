@@ -1,0 +1,42 @@
+@model IEnumerable<DsiVendas.Models.Compra>
+
+<h1 class="my-4">Lista de Compras</h1>
+
+<p>
+    <a asp-action="Criar" class="btn btn-primary">Nova Compra</a>
+</p>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Fornecedor</th>
+            <th scope="col">Funcionario</th>
+            <th scope="col">Data da Compra</th>
+            <th scope="col">Status</th>
+            <th scope="col">Forma de Pagamento</th>
+            <th scope="col">Forma de Entrega</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var compra in Model)
+        {
+            <tr>
+                <td scope="row">@compra.Id</td>
+                <td>@(compra.Fornecedor?.Nome ?? "Fornecedor não encontrado")</td>
+                <td>@(compra.Funcionario?.Nome ?? "Funcionário não encontrado")</td>
+                <td>@(compra.DataVenda.ToString("dd/MM/yyyy") ?? "Data não definida")</td>
+                <td>@compra.Status</td>
+                <td>@(compra.FormaPagamento ?? "Forma de pagamento não definida")</td>
+                <td>@(compra.FormaEntrega ?? "Forma de entrega não definida")</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@compra.Id" class="btn btn-warning btn-sm">Editar</a>
+                    <form asp-action="Excluir" asp-route-id="@compra.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir esta compra?');">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

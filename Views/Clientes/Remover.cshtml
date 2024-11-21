@@ -1,0 +1,28 @@
+@model DsiVendas.Models.Cliente
+
+<h1>Confirmar Exclusão</h1>
+
+<p>Você tem certeza que deseja remover o cliente @Model.Nome?</p>
+
+<div>
+    <h4>Detalhes do Cliente</h4>
+    <dl class="row">
+        <dt class="col-sm-2">Id</dt>
+        <dd class="col-sm-10">@Model.Id</dd>
+        <dt class="col-sm-2">Nome</dt>
+        <dd class="col-sm-10">@Model.Nome</dd>
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+        <dt class="col-sm-2">Endereço</dt>
+        <dd class="col-sm-10">@Model.Endereco</dd>
+        <dt class="col-sm-2">Telefone</dt>
+        <dd class="col-sm-10">@Model.Telefone</dd>
+    </dl>
+</div>
+
+<form asp-action="Excluir" method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <input type="submit" value="Excluir" class="btn btn-danger" />
+    @Html.AntiForgeryToken()
+</form>
+<a asp-action="Index" class="btn btn-secondary">Cancelar</a>

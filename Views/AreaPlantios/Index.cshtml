@@ -1,0 +1,41 @@
+@model IEnumerable<DsiVendas.Models.AreaPlantio>
+
+<h1>Listagem das Áreas de Plantio</h1>
+
+<p>
+    <a asp-action="Criar" class="btn btn-primary">Nova Área de Plantio</a>
+</p>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Hectares</th>
+            <th scope="col">Localização</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Id Fazenda</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var areaPlantio in Model)
+        {
+        <tr>
+            <td scope="row">@areaPlantio.Id</td>
+            <td>@areaPlantio.Nome</td>
+            <td>@areaPlantio.Hectares</td>
+            <td>@areaPlantio.Localizacao</td>
+            <td>@areaPlantio.Descricao</td>
+            <td>@areaPlantio.Fazenda?.Id -- @areaPlantio.Fazenda?.Telefone</td>
+            <td>
+                <a asp-action="Editar" asp-route-id="@areaPlantio.Id" class="btn btn-sm btn-warning">Editar</a>
+                <form asp-action="Excluir" asp-route-id="@areaPlantio.Id" method="post" style="display:inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?');" class="btn btn-sm btn-danger">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,94 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+.logout-link {
+  background-color: red;
+  color: white !important;
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+
+.logout-link:hover {
+  background-color: darkred;
+  color: white !important;
+}
+.login-link {
+  background-color: green;
+  color: white !important;
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+
+.login-link:hover {
+  background-color: darkgreen;
+  color: white !important;
+}
+.card {
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-header {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.card-body .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-body .card-text {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+/* Centralização do conteúdo */
+.container {
+  min-height: 100vh;
+}
+
+/* Estilizando os campos de input e o botão */
+input.form-control-lg {
+  font-size: 1.1rem; /* Aumenta o tamanho da fonte no campo */
+  padding: 0.8rem; /* Aumenta o espaçamento dentro do campo */
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.card {
+  border-radius: 15px;
+}
+
+
+
+

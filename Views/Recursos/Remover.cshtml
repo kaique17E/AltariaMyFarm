@@ -1,0 +1,41 @@
+@model DsiVendas.Models.Recurso
+
+@{
+    ViewData["Title"] = "Remover Recurso";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h4>Tem certeza que deseja remover o recurso?</h4>
+<hr />
+
+<div>
+    <h5>Detalhes do Recurso</h5>
+    <dl class="row">
+        <dt class="col-sm-2">Nome</dt>
+        <dd class="col-sm-10">@Model.Nome</dd>
+
+        <dt class="col-sm-2">Preço</dt>
+        <dd class="col-sm-10">@Model.Preco</dd>
+
+        <dt class="col-sm-2">Quantidade</dt>
+        <dd class="col-sm-10">@Model.Quantidade</dd>
+
+        <dt class="col-sm-2">Tipo</dt>
+        <dd class="col-sm-10">@Model.Tipo</dd>
+
+        <dt class="col-sm-2">Número de Série</dt>
+        <dd class="col-sm-10">@Model.NumeroSerie</dd>
+        
+        <dt class="col-sm-2">Data de Aquisição</dt>
+        <dd class="col-sm-10">@Model.DataAquisicao.ToShortDateString()</dd>
+    </dl>
+</div>
+
+<form asp-action="Excluir" method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <button type="submit" class="btn btn-danger">Confirmar Remoção</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>

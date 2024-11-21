@@ -1,0 +1,74 @@
+@model DsiVendas.Models.Compra
+
+<h1 class="my-4">Remover Compra</h1>
+
+<form asp-action="Excluir" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group w-50">
+        <label>Data da Compra:</label>
+        <input asp-for="DataVenda" class="form-control" type="date" readonly />
+    </div>
+
+    <div class="form-group w-50">
+        <label>Fornecedor:</label>
+        <input value="@ViewBag.FornecedorNome" class="form-control" readonly />
+    </div>
+
+    <div class="form-group w-50">
+        <label>Funcionário:</label>
+        <input value="@ViewBag.FuncionarioNome" class="form-control" readonly />
+    </div>
+
+    <div class="form-group w-50">
+        <label>Status:</label>
+        <input asp-for="Status" class="form-control" readonly />
+    </div>
+
+    <div class="form-group w-50">
+        <label>Forma de Pagamento:</label>
+        <input value="@ViewBag.FormaPagamentoNome" class="form-control" readonly />
+    </div>
+
+    <div class="form-group w-50">
+        <label>Forma de Entrega:</label>
+        <input asp-for="FormaEntrega" class="form-control" readonly />
+    </div>
+
+    <div class="form-group w-50">
+        <label>Total da Compra:</label>
+        <input asp-for="Total" class="form-control" readonly />
+    </div>
+
+    <h4 class="mt-4">Itens da Compra</h4>
+    <div class="form-group w-100">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Recurso</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ItensCompra)
+                {
+                    <tr>
+                        <td>@item.Recurso.Nome</td>
+                        <td>@item.Quantidade</td>
+                        <td>@item.PrecoUnitario.ToString("C")</td>
+                        <td>@item.SubTotal.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="alert alert-danger" role="alert">
+        Tem certeza de que deseja remover esta compra? Esta ação não pode ser desfeita.
+    </div>
+
+    <button type="submit" class="btn btn-danger mt-2">Remover</button>
+    <a asp-action="Index" class="btn btn-secondary mt-2">Cancelar</a>
+</form>

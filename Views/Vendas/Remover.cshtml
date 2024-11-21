@@ -1,0 +1,29 @@
+@model DsiVendas.Models.Venda
+
+@{
+    ViewBag.Title = "Excluir Venda";
+}
+
+<h2>Excluir Venda</h2>
+
+<h3>Você tem certeza que deseja excluir esta venda?</h3>
+
+<div>
+    <h4>Detalhes da Venda</h4>
+    <dl class="row">
+        <dt class="col-sm-2">Cliente</dt>
+        <dd class="col-sm-10">@Model.Cliente?.Nome</dd>
+
+        <dt class="col-sm-2">Data</dt>
+        <dd class="col-sm-10">@Model.DataVenda.ToShortDateString()</dd>
+
+        <dt class="col-sm-2">Forma de Pagamento</dt>
+        <dd class="col-sm-10">@Model.FormaPagamento</dd>
+    </dl>
+
+    <form asp-action="Excluir">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Excluir</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

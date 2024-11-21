@@ -1,0 +1,42 @@
+@model IEnumerable<DsiVendas.Models.Venda>
+
+@{
+    ViewBag.Title = "Listagem de Vendas";
+}
+
+<h1>Listagem de Vendas</h1>
+
+<p>
+    <a asp-action="Criar" class="btn btn-primary">Nova Venda</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>E-mail</th>
+            <th>Data da Venda</th>
+            <th>Forma de Pagamento</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var venda in Model)
+        {
+            <tr>
+                <td>@venda.Id</td>
+                <td>@venda.Cliente?.Nome</td>
+                <td>@venda.Cliente?.Email</td>                
+                <td>@venda.DataVenda.ToString("dd/MM/yyyy")</td>
+                <td>@venda.FormaPagamento</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@venda.Id" class="btn btn-warning">Editar</a>|
+                    <form asp-action="Excluir" asp-route-id="@venda.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta venda?');">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

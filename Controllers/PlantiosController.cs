@@ -110,5 +110,67 @@ public async Task<IActionResult> Criar(Plantio plantio)
             if (recurso == null) return NotFound();
             return Json(new { numeroSerie = recurso.NumeroSerie });
         }
+
+public IActionResult Excluir(int id)
+{
+    // Busca o plantio pelo ID
+    var plantio = _context.Plantios.FirstOrDefault(p => p.Id == id);
+
+    if (plantio == null)
+    {
+        return NotFound();
+    }
+
+    // Busca todos os recursos associados ao plantio usando critérios alternativos
+    var recursosPlantio = _context.Recursos
+        .Where(r => r.itensRecurso.Any(p => p.Id == id)) // Supondo que há um relacionamento entre Plantio e Recursos
+        .ToList();
+
+    // Organiza os recursos por tipo na ViewBag
+    ViewBag.Recursos = new
+    {
+        Maquinarios = recursosPlantio
+            .Where(r => r.Tipo == "Maquinario")
+            .Select(r => r.Nome)
+            .ToList(),
+
+        Insumos = recursosPlantio
+            .Where(r => r.Tipo == "Insumo")
+            .Select(r => r.Nome)
+            .ToList(),
+
+        Produtos = recursosPlantio
+            .Where(r => r.Tipo == "Produto")
+            .Select(r => r.Nome)
+            .ToList()
+    };
+
+    // Busca o nome da área do plantio, se existir
+    ViewBag.AreaPlantioNome = _context.AreaPlantios
+        .Where(a => a.Id == plantio.AreaPlantioId)
+        .Select(a => a.Nome)
+        .FirstOrDefault();
+
+    // Retorna a view de exclusão com os dados do plantio
+    return View(plantio);
+}
+
+[HttpPost, ActionName("Excluir")]
+[ValidateAntiForgeryToken]
+public IActionResult ExcluirConfirmado(int id)
+{
+    var plantio = _context.Plantios.Find(id);
+    if (plantio == null)
+    {
+        return NotFound();
+    }
+    // Remove o plantio
+    _context.Plantios.Remove(plantio);
+    _context.SaveChanges();
+
+    return RedirectToAction("Index");
+}
+
+
     }
 }
